@@ -1,88 +1,102 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Card from "./card";
-import { ratingfilter, titlefilter } from "./filter";
-import moviesArray from "./moviesarray"
+import moviesArray from "./moviesarray";
 
 export default function Movies() {
-  const [data, setData] = useState({
-    id: 5,
+  // UI state
+  const [showForm, setShowForm] = useState(false);
+  const [query, setQuery] = useState("");
+  const [ratingFilter, setRatingFilter] = useState("all");
+
+  // Data state
+  const [movies, setMovies] = useState(moviesArray);
+  const [form, setForm] = useState({
     title: "",
     description: "",
     rating: "",
     imgLink: "",
   });
 
-  const [movies, setMovies] = useState(moviesArray);
-  const [btndisplay, setbtndisplay] = useState("block");
-  const [inputdisplay, setinputdisplay] = useState("none");
-  const [search, setsearch] = useState([]);
-  const movieslist = movies.map((movie) => {
-    return (
-      <Card
-        key={movie.id}
-        title={movie.title}
-        description={movie.description}
-        rating={movie.rating}
-        imgLink={movie.imgLink}
-        handelDelete={() => {
-          handelDelete(movie.id);
-        }}
-      />
-    );
-  });
-  let searchlist = search.map((movie) => {
-    return (
-      <Card
-        key={movie.id}
-        title={movie.title}
-        description={movie.description}
-        rating={movie.rating}
-        imgLink={movie.imgLink}
-        handelDelete={() => {
-          handelDelete(movie.id);
-        }}
-      />
-    );
-  });
-  function handelDelete(id) {
-    setMovies(
-      movies.filter((movie) => {
-        if (movie.id != id) {
-          return movie;
-        }
-      })
-    );
-    setsearch(
-      search.filter((emovie) => {
-        if (emovie.id != id) {
-          return emovie;
-        }
-      })
-    );
-  }
+  const handleDelete = (id) => {
+    setMovies((prev) => prev.filter((m) => m.id !== id));
+  };
+
+  const handleAdd = () => {
+    const ratingNum = Number(form.rating);
+    const isValid =
+      form.title.trim() &&
+      form.description.trim() &&
+      form.imgLink.trim() &&
+      !Number.isNaN(ratingNum) &&
+      ratingNum >= 0 &&
+      ratingNum <= 10;
+
+    if (!isValid) return;
+
+    const nextId =
+      movies.length > 0 ? Math.max(...movies.map((m) => m.id)) + 1 : 1;
+
+    const newMovie = {
+      id: nextId,
+      title: form.title.trim(),
+      description: form.description.trim(),
+      imgLink: form.imgLink.trim(),
+      rating: ratingNum,
+    };
+
+    setMovies((prev) => [...prev, newMovie]);
+    setForm({ title: "", description: "", rating: "", imgLink: "" });
+    setShowForm(false);
+  };
+
+  const filteredMovies = useMemo(() => {
+    let list = movies;
+
+    if (query.trim()) {
+      const q = query.toLowerCase();
+      list = list.filter((m) => m.title.toLowerCase().includes(q));
+    }
+
+    if (ratingFilter !== "all") {
+      const r = Number(ratingFilter);
+      list = list.filter((m) => Number(m.rating) === r);
+    }
+
+    return list;
+  }, [movies, query, ratingFilter]);
+
   return (
     <>
       <button
-        onClick={() => {
-          setinputdisplay("flex");
-          setbtndisplay("none");
-        }}
+        onClick={() => setShowForm(true)}
         className="add"
-        style={{ display: btndisplay }}
+        style={{ display: showForm ? "none" : "block" }}
       >
         add a movie
       </button>
-      <div style={{ position: "absolute", top: "10px", right: "100px",display:'flex',flexDirection:'column' }}>
+
+      <div
+        style={{
+          position: "absolute",
+          top: "10px",
+          right: "100px",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
         <input
-          onChange={(e) => {
-            setsearch(titlefilter(movies, e));
-          }}
+          onChange={(e) => setQuery(e.target.value)}
+          value={query}
           type="text"
           placeholder="search"
         />
-        <label style={{margin:'10px'}} htmlFor="">
+        <label style={{ margin: "10px" }}>
           Rating:
-          <select onChange={(e)=>{setsearch(ratingfilter(movies,e))}} name="" id="rating">
+          <select
+            id="rating"
+            onChange={(e) => setRatingFilter(e.target.value)}
+            value={ratingFilter}
+          >
             <option value="all">ALL</option>
             <option value="1">1</option>
             <option value="2">2</option>
@@ -97,11 +111,12 @@ export default function Movies() {
           </select>
         </label>
       </div>
+
       <div
         style={{
           width: "300px",
           position: "relative",
-          display: inputdisplay,
+          display: showForm ? "flex" : "none",
           flexDirection: "column",
           justifyContent: "center",
           backgroundColor: "orange",
@@ -110,10 +125,7 @@ export default function Movies() {
         }}
       >
         <button
-          onClick={() => {
-            setinputdisplay("none");
-            setbtndisplay("block");
-          }}
+          onClick={() => setShowForm(false)}
           style={{
             position: "absolute",
             top: "10px",
@@ -129,66 +141,65 @@ export default function Movies() {
         >
           X
         </button>
+
         <h2 style={{ textAlign: "center" }}>Add a movie</h2>
-        <label htmlFor="">name :</label>
+
+        <label>name :</label>
         <input
-          onChange={(e) => {
-            setData({ ...data, title: e.target.value });
-          }}
-          value={data.title}
+          onChange={(e) => setForm((s) => ({ ...s, title: e.target.value }))}
+          value={form.title}
           type="text"
         />
-        <label htmlFor="">description: </label>
+
+        <label>description: </label>
         <input
-          onChange={(e) => {
-            setData({ ...data, description: e.target.value });
-          }}
-          value={data.description}
+          onChange={(e) =>
+            setForm((s) => ({ ...s, description: e.target.value }))
+          }
+          value={form.description}
           type="text"
         />
-        <label htmlFor="">Rating: </label>
+
+        <label>Rating: </label>
         <input
-          onChange={(e) => {
-            setData({ ...data, rating: e.target.value });
-          }}
-          value={data.rating}
+          onChange={(e) => setForm((s) => ({ ...s, rating: e.target.value }))}
+          value={form.rating}
           type="number"
           max={10}
           min={0}
           placeholder="0-10"
         />
-        <label htmlFor="">Poster URL: </label>
+
+        <label>Poster URL: </label>
         <input
-          onChange={(e) => {
-            setData({ ...data, imgLink: e.target.value });
-          }}
-          value={data.imgLink}
+          onChange={(e) => setForm((s) => ({ ...s, imgLink: e.target.value }))}
+          value={form.imgLink}
           type="text"
         />
-        <button
-          className="add"
-          onClick={() => {
-            if (data.description && data.imgLink && data.imgLink) {
-              setData({ ...data, id: data.id + 1 });
-              setMovies([...movies, data]);
-              setData((c) => {
-                return { ...c, title: "", description: "", imgLink: "" };
-              });
-            }
-          }}
-        >
+
+        <button className="add" onClick={handleAdd}>
           ADD
         </button>
       </div>
+
       <div
         style={{
           display: "flex",
           flexWrap: "wrap",
           justifyContent: "space-around",
-          margin:'40px 0 40px 0'
+          margin: "40px 0 40px 0",
         }}
       >
-        {search.length > 0 ? searchlist : movieslist}
+        {filteredMovies.map((movie) => (
+          <Card
+            key={movie.id}
+            title={movie.title}
+            description={movie.description}
+            rating={movie.rating}
+            imgLink={movie.imgLink}
+            handelDelete={() => handleDelete(movie.id)}
+          />
+        ))}
       </div>
     </>
   );
