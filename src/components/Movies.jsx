@@ -66,128 +66,206 @@ export default function Movies() {
   }, [movies, query, ratingFilter]);
 
   return (
-    <>
+    <div style={{ padding: "24px", maxWidth: "1200px", margin: "0 auto" }}>
       <button
         onClick={() => setShowForm(true)}
         className="add"
-        style={{ display: showForm ? "none" : "block" }}
+        style={{
+          display: showForm ? "none" : "block",
+          backgroundColor: "#3b82f6",
+          color: "white",
+          padding: "12px 24px",
+          borderRadius: "8px",
+          border: "none",
+          fontSize: "1rem",
+          fontWeight: "500",
+          cursor: "pointer",
+          transition: "background-color 0.2s ease",
+          marginBottom: "24px",
+          ":hover": { backgroundColor: "#2563eb" },
+        }}
       >
-        add a movie
+        Add a Movie
       </button>
 
       <div
         style={{
-          position: "absolute",
-          top: "10px",
-          right: "100px",
+          position: "sticky",
+          top: "20px",
+          zIndex: 10,
+          backgroundColor: "white",
+          padding: "16px",
+          borderRadius: "12px",
+          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
           display: "flex",
-          flexDirection: "column",
+          gap: "16px",
+          alignItems: "center",
+          justifyContent: "flex-end",
+          marginBottom: "32px",
+          border: "1px solid #0055ffff",
         }}
       >
         <input
           onChange={(e) => setQuery(e.target.value)}
           value={query}
           type="text"
-          placeholder="search"
+          placeholder="Search movies..."
+          style={{
+            padding: "8px 16px",
+            borderRadius: "6px",
+            border: "1px solid #e5e7eb",
+            width: "250px",
+            fontSize: "0.95rem",
+          }}
         />
-        <label style={{ margin: "10px" }}>
-          Rating:
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <label style={{ color: "#4b5563", fontSize: "0.95rem" }}>Rating:</label>
           <select
             id="rating"
             onChange={(e) => setRatingFilter(e.target.value)}
             value={ratingFilter}
+            style={{
+              padding: "8px 12px",
+              borderRadius: "6px",
+              border: "1px solid #e5e7eb",
+              backgroundColor: "white",
+              fontSize: "0.95rem",
+              cursor: "pointer",
+            }}
           >
-            <option value="all">ALL</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-            <option value="8">8</option>
-            <option value="9">9</option>
-            <option value="10">10</option>
+            <option value="all">All Ratings</option>
+            {[...Array(10)].map((_, i) => (
+              <option key={i + 1} value={i + 1}>
+                {i + 1}
+              </option>
+            ))}
           </select>
-        </label>
+        </div>
       </div>
 
+      {/* Add Movie Form Modal */}
       <div
         style={{
-          width: "300px",
-          position: "relative",
+          width: "100%",
+          maxWidth: "400px",
+          position: "fixed",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
           display: showForm ? "flex" : "none",
           flexDirection: "column",
-          justifyContent: "center",
-          backgroundColor: "orange",
-          padding: "20px",
-          borderRadius: "20px",
+          gap: "16px",
+          backgroundColor: "white",
+          padding: "24px",
+          borderRadius: "16px",
+          boxShadow:
+            "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+          zIndex: 1000,
+          border: "2px solid #0055ffff",
         }}
       >
         <button
           onClick={() => setShowForm(false)}
           style={{
             position: "absolute",
-            top: "10px",
-            right: "10px",
+            top: "16px",
+            right: "16px",
             borderRadius: "50%",
-            backgroundColor: "rgba(248, 47, 47, 1)",
-            fontWeight: "700",
+            backgroundColor: "#ef4444",
+            color: "white",
+            border: "none",
+            width: "32px",
+            height: "32px",
             cursor: "pointer",
-            height: "30px",
-            width: "30px",
-            fontSize: "15px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "14px",
           }}
         >
-          X
+          ✕
         </button>
 
-        <h2 style={{ textAlign: "center" }}>Add a movie</h2>
+        <h2
+          style={{
+            margin: "0 0 16px",
+            color: "#1f2937",
+            textAlign: "center",
+          }}
+        >
+          Add a Movie
+        </h2>
 
-        <label>name :</label>
-        <input
-          onChange={(e) => setForm((s) => ({ ...s, title: e.target.value }))}
-          value={form.title}
-          type="text"
-        />
+        {["Title", "Description", "Rating", "Poster URL"].map((label) => (
+          <div
+            key={label}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "4px",
+            }}
+          >
+            <label
+              style={{
+                color: "#4b5563",
+                fontSize: "0.9rem",
+              }}
+            >
+              {label}:
+            </label>
+            <input
+              onChange={(e) =>
+                setForm((s) => ({
+                  ...s,
+                  [label.toLowerCase().replace(" url", "Link")]: e.target.value,
+                }))
+              }
+              value={form[label.toLowerCase().replace(" url", "Link")]}
+              type={label === "Rating" ? "number" : "text"}
+              max={label === "Rating" ? 10 : undefined}
+              min={label === "Rating" ? 0 : undefined}
+              placeholder={
+                label === "Rating"
+                  ? "0-10"
+                  : `Enter ${label.toLowerCase()}...`
+              }
+              style={{
+                padding: "8px 12px",
+                borderRadius: "6px",
+                border: "1px solid #e5e7eb",
+                fontSize: "0.95rem",
+              }}
+            />
+          </div>
+        ))}
 
-        <label>description: </label>
-        <input
-          onChange={(e) =>
-            setForm((s) => ({ ...s, description: e.target.value }))
-          }
-          value={form.description}
-          type="text"
-        />
-
-        <label>Rating: </label>
-        <input
-          onChange={(e) => setForm((s) => ({ ...s, rating: e.target.value }))}
-          value={form.rating}
-          type="number"
-          max={10}
-          min={0}
-          placeholder="0-10"
-        />
-
-        <label>Poster URL: </label>
-        <input
-          onChange={(e) => setForm((s) => ({ ...s, imgLink: e.target.value }))}
-          value={form.imgLink}
-          type="text"
-        />
-
-        <button className="add" onClick={handleAdd}>
-          ADD
+        <button
+          className="add"
+          onClick={handleAdd}
+          style={{
+            backgroundColor: "#3b82f6",
+            color: "white",
+            padding: "10px",
+            borderRadius: "6px",
+            border: "none",
+            fontSize: "1rem",
+            fontWeight: "500",
+            cursor: "pointer",
+            marginTop: "8px",
+            transition: "background-color 0.2s ease",
+            ":hover": { backgroundColor: "#2563eb" },
+          }}
+        >
+          Add Movie
         </button>
       </div>
 
       <div
         style={{
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: "space-around",
-          margin: "40px 0 40px 0",
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+          gap: "24px",
+          padding: "16px",
         }}
       >
         {filteredMovies.map((movie) => (
@@ -201,6 +279,6 @@ export default function Movies() {
           />
         ))}
       </div>
-    </>
+    </div>
   );
 }
