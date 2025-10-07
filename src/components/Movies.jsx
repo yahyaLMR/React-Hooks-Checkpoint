@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
 import Card from "./card";
-import moviesArray from "./moviesarray";
+import { Link } from "react-router-dom";
+import { useContext } from "react";
+import { MoviesContext } from "../contexts/MoviesContext";
 
 export default function Movies() {
   // UI state
@@ -9,6 +11,7 @@ export default function Movies() {
   const [ratingFilter, setRatingFilter] = useState("all");
 
   // Data state
+  let moviesArray = useContext(MoviesContext);
   const [movies, setMovies] = useState(moviesArray);
   const [form, setForm] = useState({
     title: "",
@@ -119,7 +122,9 @@ export default function Movies() {
           }}
         />
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <label style={{ color: "#4b5563", fontSize: "0.95rem" }}>Rating:</label>
+          <label style={{ color: "#4b5563", fontSize: "0.95rem" }}>
+            Rating:
+          </label>
           <select
             id="rating"
             onChange={(e) => setRatingFilter(e.target.value)}
@@ -225,9 +230,7 @@ export default function Movies() {
               max={label === "Rating" ? 10 : undefined}
               min={label === "Rating" ? 0 : undefined}
               placeholder={
-                label === "Rating"
-                  ? "0-10"
-                  : `Enter ${label.toLowerCase()}...`
+                label === "Rating" ? "0-10" : `Enter ${label.toLowerCase()}...`
               }
               style={{
                 padding: "8px 12px",
@@ -269,14 +272,19 @@ export default function Movies() {
         }}
       >
         {filteredMovies.map((movie) => (
-          <Card
+          <Link
             key={movie.id}
-            title={movie.title}
-            description={movie.description}
-            rating={movie.rating}
-            imgLink={movie.imgLink}
-            handelDelete={() => handleDelete(movie.id)}
-          />
+            to={`/movieDetails/${movie.id}`}
+            style={{ textDecoration: "none" }}
+          >
+            <Card
+              title={movie.title}
+              description={movie.description}
+              rating={movie.rating}
+              imgLink={movie.imgLink}
+              handelDelete={() => handleDelete(movie.id)}
+            />
+          </Link>
         ))}
       </div>
     </div>
