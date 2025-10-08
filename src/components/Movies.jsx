@@ -10,7 +10,7 @@ export default function Movies() {
   const [ratingFilter, setRatingFilter] = useState("all");
 
   // Data state
-  let moviesArrayLS = JSON.parse(localStorage.getItem("movies"));
+  let moviesArrayLS = JSON.parse(sessionStorage.getItem("movies"));
   let moviesArray = useContext(MoviesContext);
   const [movies, setMovies] = useState(moviesArrayLS && moviesArrayLS.length > 0 ? moviesArrayLS : moviesArray);
   const [form, setForm] = useState({
@@ -23,7 +23,7 @@ export default function Movies() {
 
   const handleDelete = (id) => {
     setMovies((prev) => prev.filter((m) => m.id !== id));
-    localStorage.setItem(
+    sessionStorage.setItem(
       "movies",
       JSON.stringify(movies.filter((m) => m.id !== id))
     );
@@ -54,7 +54,7 @@ export default function Movies() {
     };
 
     setMovies((prev) => [...prev, newMovie]);
-    localStorage.setItem("movies", JSON.stringify([...movies, newMovie]));
+    sessionStorage.setItem("movies", JSON.stringify([...movies, newMovie]));
     setForm({ title: "", description: "", rating: "", posterLink: "" });
     setShowForm(false);
   };

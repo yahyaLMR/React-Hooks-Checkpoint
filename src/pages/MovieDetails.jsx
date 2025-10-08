@@ -6,7 +6,7 @@ export default function MovieDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  let moviesArrayLS = JSON.parse(localStorage.getItem("movies"));
+  let moviesArrayLS = JSON.parse(sessionStorage.getItem("movies"));
   let moviesContext = useContext(MoviesContext);
   const moviesArray =
     moviesArrayLS && moviesArrayLS.length > 0

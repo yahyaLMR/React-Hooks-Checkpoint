@@ -2,12 +2,14 @@ import "./App.css";
 import Movies from "./components/Movies";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import MovieDetails from "./pages/MovieDetails";
+import Clarification from "./components/Clarification";
 
 function App() {
   const navigate = useNavigate();
   
   return (
     <>
+    <Clarification></Clarification>
       <Routes>
         <Route path="/" element={<Movies />} />
         <Route path="/movieDetails/:id" element={<MovieDetails />} />
