@@ -1,12 +1,11 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useContext } from "react";
-import { MoviesContext } from "../contexts/MoviesContext";
 
 export default function MovieDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const moviesArray = useContext(MoviesContext);
+  const moviesArray = JSON.parse(localStorage.getItem("movies"));
   const movie = moviesArray.find((m) => m.id == id);
+  console.log(movie);
 
   return (
     <div
@@ -19,7 +18,7 @@ export default function MovieDetails() {
       }}
     >
       <button
-        onClick={() => navigate('/')}
+        onClick={() => navigate("/")}
         style={{
           padding: "0.75rem 1.5rem",
           backgroundColor: "#2563eb",
@@ -35,8 +34,8 @@ export default function MovieDetails() {
           gap: "0.5rem",
           transition: "background-color 0.2s",
           hover: {
-            backgroundColor: "#1d4ed8"
-          }
+            backgroundColor: "#1d4ed8",
+          },
         }}
       >
         ← Back to Home
@@ -54,7 +53,7 @@ export default function MovieDetails() {
       >
         <div>
           <img
-            src={movie.imgLink}
+            src={movie.posterLink}
             alt={movie.title}
             style={{
               width: "100%",
@@ -115,7 +114,16 @@ export default function MovieDetails() {
               borderRadius: "8px",
             }}
           >
-<iframe width="560" height="315" src={movie.trailerUrl} title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            <iframe
+              width="560"
+              height="315"
+              src={movie.trailerLink}
+              title="YouTube video player"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+            ></iframe>
           </div>
         </div>
       </div>

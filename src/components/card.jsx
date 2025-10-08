@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 export default function Card({
   id,
   imgLink,
@@ -21,8 +22,7 @@ export default function Card({
           margin: "16px",
           boxShadow:
             "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-          transition:
-            "transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out",
+          transition: "transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out",
           overflow: "hidden",
           cursor: "pointer",
           position: "relative",
@@ -33,16 +33,22 @@ export default function Card({
           },
         }}
       >
-        <img
-          style={{
-            width: "100%",
-            height: "320px",
-            objectFit: "cover",
-            borderRadius: "12px 12px 0 0",
-          }}
-          src={imgLink}
-          alt={title}
-        />
+        <Link
+          key={id}
+          to={`/movieDetails/${id}`}
+          style={{ textDecoration: "none" }}
+        >
+          <img
+            style={{
+              width: "100%",
+              height: "320px",
+              objectFit: "cover",
+              borderRadius: "12px 12px 0 0",
+            }}
+            src={imgLink}
+            alt={title}
+          />
+        </Link>
         <div
           style={{
             padding: "16px",
@@ -50,28 +56,34 @@ export default function Card({
             boxSizing: "border-box",
           }}
         >
-          <h1
-            style={{
-              fontSize: "1.25rem",
-              fontWeight: "600",
-              color: "#1a1a1a",
-              marginBottom: "8px",
-              lineHeight: "1.4",
-            }}
+          <Link
+            key={id}
+            to={`/movieDetails/${id}`}
+            style={{ textDecoration: "none" }}
           >
-            {title}
-          </h1>
-          <h4
-            style={{
-              margin: "8px 0",
-              color: "#4b5563",
-              fontSize: "0.95rem",
-              lineHeight: "1.5",
-              fontWeight: "400",
-            }}
-          >
-            {description}
-          </h4>
+            <h1
+              style={{
+                fontSize: "1.25rem",
+                fontWeight: "600",
+                color: "#1a1a1a",
+                marginBottom: "8px",
+                lineHeight: "1.4",
+              }}
+            >
+              {title}
+            </h1>
+            <h4
+              style={{
+                margin: "8px 0",
+                color: "#4b5563",
+                fontSize: "0.95rem",
+                lineHeight: "1.5",
+                fontWeight: "400",
+              }}
+            >
+              {description}
+            </h4>
+          </Link>
           <div
             style={{
               display: "flex",

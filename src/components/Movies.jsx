@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import Card from "./card";
-import { Link } from "react-router-dom";
 import { useContext } from "react";
 import { MoviesContext } from "../contexts/MoviesContext";
 
@@ -11,17 +10,23 @@ export default function Movies() {
   const [ratingFilter, setRatingFilter] = useState("all");
 
   // Data state
+  let moviesArrayLS = JSON.parse(localStorage.getItem("movies"));
   let moviesArray = useContext(MoviesContext);
-  const [movies, setMovies] = useState(moviesArray);
+  const [movies, setMovies] = useState(moviesArrayLS.length > 0 ? moviesArrayLS : moviesArray);
   const [form, setForm] = useState({
     title: "",
     description: "",
     rating: "",
-    imgLink: "",
+    posterLink: "",
+    trailerLink: "",
   });
 
   const handleDelete = (id) => {
     setMovies((prev) => prev.filter((m) => m.id !== id));
+    localStorage.setItem(
+      "movies",
+      JSON.stringify(movies.filter((m) => m.id !== id))
+    );
   };
 
   const handleAdd = () => {
@@ -29,7 +34,7 @@ export default function Movies() {
     const isValid =
       form.title.trim() &&
       form.description.trim() &&
-      form.imgLink.trim() &&
+      form.posterLink.trim() &&
       !Number.isNaN(ratingNum) &&
       ratingNum >= 0 &&
       ratingNum <= 10;
@@ -43,12 +48,14 @@ export default function Movies() {
       id: nextId,
       title: form.title.trim(),
       description: form.description.trim(),
-      imgLink: form.imgLink.trim(),
+      posterLink: form.posterLink.trim(),
+      trailerLink: form.trailerLink.trim(), // Add this line
       rating: ratingNum,
     };
 
     setMovies((prev) => [...prev, newMovie]);
-    setForm({ title: "", description: "", rating: "", imgLink: "" });
+    localStorage.setItem("movies", JSON.stringify([...movies, newMovie]));
+    setForm({ title: "", description: "", rating: "", posterLink: "" });
     setShowForm(false);
   };
 
@@ -201,46 +208,62 @@ export default function Movies() {
           Add a Movie
         </h2>
 
-        {["Title", "Description", "Rating", "Poster URL"].map((label) => (
-          <div
-            key={label}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "4px",
-            }}
-          >
-            <label
+        {["Title", "Description", "Rating", "Poster URL", "Trailer URL"].map(
+          (label) => (
+            <div
+              key={label}
               style={{
-                color: "#4b5563",
-                fontSize: "0.9rem",
+                display: "flex",
+                flexDirection: "column",
+                gap: "4px",
               }}
             >
-              {label}:
-            </label>
-            <input
-              onChange={(e) =>
-                setForm((s) => ({
-                  ...s,
-                  [label.toLowerCase().replace(" url", "Link")]: e.target.value,
-                }))
-              }
-              value={form[label.toLowerCase().replace(" url", "Link")]}
-              type={label === "Rating" ? "number" : "text"}
-              max={label === "Rating" ? 10 : undefined}
-              min={label === "Rating" ? 0 : undefined}
-              placeholder={
-                label === "Rating" ? "0-10" : `Enter ${label.toLowerCase()}...`
-              }
-              style={{
-                padding: "8px 12px",
-                borderRadius: "6px",
-                border: "1px solid #e5e7eb",
-                fontSize: "0.95rem",
-              }}
-            />
-          </div>
-        ))}
+              <label
+                style={{
+                  color: "#4b5563",
+                  fontSize: "0.9rem",
+                }}
+              >
+                {label}:
+              </label>
+              <input
+                onChange={(e) =>
+                  setForm((s) => ({
+                    ...s,
+                    [label
+                      .toLowerCase()
+                      .replace(" url", "Link")
+                      .replace("trailer link", "trailerLink")]: e.target.value,
+                  }))
+                }
+                value={
+                  form[
+                    label
+                      .toLowerCase()
+                      .replace(" url", "Link")
+                      .replace("trailer link", "trailerLink")
+                  ]
+                }
+                type={label === "Rating" ? "number" : "text"}
+                max={label === "Rating" ? 10 : undefined}
+                min={label === "Rating" ? 0 : undefined}
+                placeholder={
+                  label === "Rating"
+                    ? "0-10"
+                    : label === "Trailer URL"
+                    ? "Enter YouTube video URL..."
+                    : `Enter ${label.toLowerCase()}...`
+                }
+                style={{
+                  padding: "8px 12px",
+                  borderRadius: "6px",
+                  border: "1px solid #e5e7eb",
+                  fontSize: "0.95rem",
+                }}
+              />
+            </div>
+          )
+        )}
 
         <button
           className="add"
@@ -272,19 +295,16 @@ export default function Movies() {
         }}
       >
         {filteredMovies.map((movie) => (
-          <Link
+          <Card
             key={movie.id}
-            to={`/movieDetails/${movie.id}`}
-            style={{ textDecoration: "none" }}
-          >
-            <Card
-              title={movie.title}
-              description={movie.description}
-              rating={movie.rating}
-              imgLink={movie.imgLink}
-              handelDelete={() => handleDelete(movie.id)}
-            />
-          </Link>
+            id={movie.id}
+            title={movie.title}
+            description={movie.description}
+            rating={movie.rating}
+            imgLink={movie.posterLink}
+            trailerLink={movie.trailerLink}
+            handelDelete={() => handleDelete(movie.id)}
+          />
         ))}
       </div>
     </div>
