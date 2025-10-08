@@ -98,7 +98,7 @@ export default function Movies() {
         Add a Movie
       </button>
 
-      <div
+      <div className="filters"
         style={{
           position: "sticky",
           top: "20px",

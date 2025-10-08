@@ -1,9 +1,18 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { MoviesContext } from "../contexts/MoviesContext";
 
 export default function MovieDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const moviesArray = JSON.parse(localStorage.getItem("movies"));
+
+  let moviesArrayLS = JSON.parse(localStorage.getItem("movies"));
+  let moviesContext = useContext(MoviesContext);
+  const moviesArray =
+    moviesArrayLS && moviesArrayLS.length > 0
+      ? moviesArrayLS
+      : moviesContext;
+
   const movie = moviesArray.find((m) => m.id == id);
   console.log(movie);
 
