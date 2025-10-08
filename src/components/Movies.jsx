@@ -12,7 +12,7 @@ export default function Movies() {
   // Data state
   let moviesArrayLS = JSON.parse(localStorage.getItem("movies"));
   let moviesArray = useContext(MoviesContext);
-  const [movies, setMovies] = useState(moviesArrayLS.length > 0 ? moviesArrayLS : moviesArray);
+  const [movies, setMovies] = useState(moviesArrayLS && moviesArrayLS.length > 0 ? moviesArrayLS : moviesArray);
   const [form, setForm] = useState({
     title: "",
     description: "",
